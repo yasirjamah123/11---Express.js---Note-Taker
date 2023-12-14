@@ -23,5 +23,7 @@ SO THAT I can organize my thoughts and keep track of tasks I need to complete
 - Usage: The app simplifies note-taking and organization, providing a structured approach to managing information.
 
 ## sceenshots 
+![deployment page screenshot](image.png)
 
 ## deployment link 
+https://yasirjamah123.github.io/11---Express.js---Note-Taker/
