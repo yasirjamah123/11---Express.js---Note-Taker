@@ -1,42 +1,45 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const path = require('path');
+const fs = require('fs');
 
-// Middleware to parse JSON requests
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// Placeholder database (replace this with a proper database setup)
-let notes = [];
+const dbPath = path.join(__dirname, 'db.json');
 
-// Serve static files (HTML, CSS, JavaScript)
-app.use(express.static('public'));
+// Read existing notes from db.json
+const readNotes = () => {
+  try {
+    const data = fs.readFileSync(dbPath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.error('Error reading db.json:', err);
+    return [];
+  }
+};
 
-// Get all notes
 app.get('/api/notes', (req, res) => {
+  const notes = readNotes();
   res.json(notes);
 });
 
-// Save a note
 app.post('/api/notes', (req, res) => {
+  const notes = readNotes();
   const newNote = req.body;
-  newNote.id = generateId(); // Replace generateId() with your unique ID generation logic
+  newNote.id = notes.length + 1;
   notes.push(newNote);
-  res.status(201).json(newNote);
+
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(notes, null, 2), 'utf8');
+    res.status(201).json({ message: 'Note added successfully' });
+  } catch (err) {
+    console.error('Error writing db.json:', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-// Delete a note
-app.delete('/api/notes/:id', (req, res) => {
-  const noteId = req.params.id;
-  notes = notes.filter((note) => note.id !== noteId);
-  res.sendStatus(200);
-});
-
-// Generate a unique ID (replace this with your unique ID generation logic)
-function generateId() {
-  return '_' + Math.random().toString(36).substr(2, 9);
-}
-
-// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

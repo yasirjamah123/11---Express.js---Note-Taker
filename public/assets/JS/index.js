@@ -1,91 +1,60 @@
-// Function to save a note
-const saveNote = (note) =>
-  fetch('/api/notes', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(note)
-  });
-
-// Function to delete a note
-const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-// Function to get all notes
-const getNotes = () =>
-  fetch('/api/notes', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-// Function to render notes in the UI
-const renderNotes = (notes) => {
-  const notesList = document.getElementById('list-group');
-  notesList.innerHTML = '';
-
-  notes.forEach((note) => {
-    const listItem = document.createElement('li');
-    listItem.classList.add('list-group-item');
-    listItem.innerText = note.title;
-
-    listItem.addEventListener('click', () => {
-      // Handle click on a note to display it or perform actions
-      console.log('Clicked note:', note);
-      // You can display the note or perform any action here
-    });
-
-    notesList.appendChild(listItem);
-  });
-};
-
-// Fetch notes when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-  getNotes()
-    .then((response) => response.json())
-    .then((notes) => {
-      console.log('All notes:', notes);
-      renderNotes(notes);
-    })
-    .catch((error) => {
-      console.error('Error fetching notes:', error);
-      // Handle error appropriately
-    });
+  const noteList = document.querySelector('#list-group');
+  const noteTitle = document.querySelector('.note-title');
+  const noteText = document.querySelector('.note-textarea');
 
-  // Example: Save a new note
-  const newNote = {
-    title: 'Sample Note',
-    text: 'This is a sample note content.'
+  const renderNoteList = (notes) => {
+    // Implementation of renderNoteList function...
   };
 
-  saveNote(newNote)
-    .then((response) => response.json())
-    .then((savedNote) => {
-      console.log('Saved note:', savedNote);
-      // Perform additional actions or update UI as needed
-    })
-    .catch((error) => {
-      console.error('Error saving note:', error);
-      // Handle error appropriately
-    });
+  const fetchNotes = () => {
+    // Implementation of fetchNotes function...
+  };
 
-  //  
-  const noteIdToDelete = 'your_note_id_here';
+  const saveNote = () => {
+    console.log('Save Note button clicked'); // Log to check if the button click is detected
 
-  deleteNote(noteIdToDelete)
-    .then(() => {
-      console.log('Note deleted successfully');
-      // Perform additional actions or update UI as needed
+    const newNote = {
+      title: noteTitle.value,
+      text: noteText.value,
+    };
+
+    console.log('New note data:', newNote); // Log the new note data before sending the request
+
+    fetch('http://localhost:3000/api/notes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newNote), // Correctly passing newNote to JSON.stringify
     })
-    .catch((error) => {
-      console.error('Error deleting note:', error);
-      // Handle error appropriately
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the response
+      })
+      .catch((error) => console.error('Error saving note:', error));
+  };
+
+  const saveNoteBtn = document.querySelector('.save-note');
+  if (saveNoteBtn) {
+    console.log('Save Note button found'); // Log to check if the button is found
+
+    saveNoteBtn.addEventListener('click', (event) => {
+      event.preventDefault(); // Prevent default form submission
+      console.log('Save Note button event listener triggered'); // Log to check if the event listener is activated
+      saveNote();
     });
+  } else {
+    console.log('Save Note button not found'); // Log if the button is not found
+  }
+
+  const newNoteBtn = document.querySelector('.new-note');
+  const clearBtn = document.querySelector('.clear-btn');
+
+  newNoteBtn.addEventListener('click', () => {
+    noteTitle.value = '';
+    noteText.value = '';
+  });
+
+  fetchNotes();
 });
